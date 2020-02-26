@@ -1,20 +1,64 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ng-container *ngIf="mmmState$ | async as mmmState">
+    <ion-header [translucent]="true">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+        <ion-toolbar>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
-</ion-content>
+            <ion-item *ngIf="years$ | async as years">
+                <ion-label>Year</ion-label>
+                <ion-select [ngModel]="mmmState.selectedYear"
+                            (ionChange)="setSelectedYear($event.detail.value)"
+                            placeholder="Select Year">
+                    <ion-select-option *ngFor="let year of years" [value]="year.id">{{year.label}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+
+        </ion-toolbar>
+
+
+    </ion-header>
+
+    <ion-content [fullscreen]="true">
+        <ion-segment [ngModel]="mmmState.selectedMonth"
+                     (ionChange)="setSelectedMonth($event.detail.value, mmmState)"
+                     scrollable value="heart" *ngIf="months$ | async as months">
+            <ion-segment-button [value]="month.id"
+                                *ngFor="let month of months">
+                {{month.label}}
+            </ion-segment-button>
+        </ion-segment>
+        <!--<pre>{{filteredTransactions$|async|json}}</pre>-->
+
+        <ion-list *ngIf="filteredTransactions$ | async as filteredTransactions">
+            <ion-item *ngFor="let transaction of filteredTransactions">
+                <!--<ion-avatar slot="start"></ion-avatar>-->
+                <ion-label>
+                    <h2>{{transaction.label}}</h2>
+                    <h3>{{transaction.amount}}</h3>
+                    <p>Due from {{transaction.startDate}} to {{transaction.endDate}}</p>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+
+        <!--<h4>{{selectedDate}}</h4>
+        <ion-datetime [(ngModel)]="selectedDate" display-timezone="utc"></ion-datetime>-->
+
+        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+            <ion-fab-button>
+                <ion-icon name="add"></ion-icon>
+            </ion-fab-button>
+        </ion-fab>
+
+    </ion-content>
+    <ion-footer>
+        <ion-toolbar>
+            <ion-segment [ngModel]="mmmState.selectedType"
+                         (ionChange)="setSelectedType($event.detail.value)"
+                         *ngIf="types$ | async as types">
+                <ion-segment-button [value]="type.id"
+                                    *ngFor="let type of types">
+                    {{type.label}}
+                </ion-segment-button>
+            </ion-segment>
+        </ion-toolbar>
+    </ion-footer>
+</ng-container>
