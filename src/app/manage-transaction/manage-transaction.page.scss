@@ -1,0 +1,25 @@
+.select-full-width {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding-left: 0 !important;
+}
+
+.transaction-breakup {
+  margin-bottom: 10px;
+
+  .status-line {
+    position: absolute;
+    width: 5px;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    background-color: red;
+  }
+
+  .transaction-breakup-button {
+    position: absolute;
+    right: 10px;
+    top: 0%;
+    height: 80%;
+  }
+}

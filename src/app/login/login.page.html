@@ -1,9 +1,37 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Login</ion-title>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-title>Login</ion-title>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content>
 
+    <!--<ng-container *ngIf="auth.user | async as user">
+        <ion-button color="dark" (click)="logout()">Logout</ion-button>
+        <h4>Welcome {{user.displayName}}</h4>
+    </ng-container>-->
+    <ion-grid>
+        <ion-row class="ion-padding-top">
+            <ion-col>
+                <ion-button color="danger"
+                            expand="block"
+                            *ngIf="!(auth.user | async)"
+                            (click)="login()">
+                    Login
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
 </ion-content>
+
+<ion-footer>
+    <ion-toolbar>
+            <ion-button color="danger"
+                        expand="block"
+                        *ngIf="!(auth.user | async)"
+                        (click)="login()">
+                Login
+            </ion-button>
+    </ion-toolbar>
+</ion-footer>

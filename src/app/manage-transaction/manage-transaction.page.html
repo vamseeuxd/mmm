@@ -1,9 +1,151 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>ManageTransaction</ion-title>
-  </ion-toolbar>
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start" routerLink="/home" routerDirection="root">
+            <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+        </ion-buttons>
+        <ion-title class="ion-text-center ion-padding-vertical">{{mmmService.manageTransactionTitle}}</ion-title>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content>
 
+    <ion-label *ngIf="mmmService.isUpdate &&  isDirty()" class="mt-3 text-warning vw-100 d-block text-center">No Changes found to Save</ion-label>
+
+    <form *ngIf="activeTab=='transaction-details'" [formGroup]="transactionForm">
+        <ion-item>
+            <ion-label position="floating">Transaction Type</ion-label>
+            <ion-select formControlName="type" placeholder="Select One"
+                        [(ngModel)]="mmmService.manageTransactionData.type">
+                <ion-select-option value="income">Income</ion-select-option>
+                <ion-select-option value="expenses">Expenses</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-label position="floating">Name *</ion-label>
+            <ion-input formControlName="label" type="text"
+                       [(ngModel)]="mmmService.manageTransactionData.label"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label position="floating">Amount *</ion-label>
+            <ion-input formControlName="amount" type="number"
+                       [(ngModel)]="mmmService.manageTransactionData.amount"></ion-input>
+        </ion-item>
+
+
+        <ion-item>
+            <ion-label position="floating">Repeat</ion-label>
+            <ion-select formControlName="repeat" placeholder="Select One"
+                        [(ngModel)]="mmmService.manageTransactionData.repeat">
+                <ion-select-option value="never">Never repeat</ion-select-option>
+                <ion-select-option value="daily">Repeat every day</ion-select-option>
+                <ion-select-option value="weekly">Repeat every week</ion-select-option>
+                <ion-select-option value="monthly">Repeat every month</ion-select-option>
+                <ion-select-option value="yearly">Repeat every year</ion-select-option>
+                <!--<ion-select-option value="custom">Custom...</ion-select-option>-->
+            </ion-select>
+        </ion-item>
+
+        <!--<ion-item>-->
+        <ion-grid *ngIf="mmmService.manageTransactionData.repeat === 'custom'">
+            <ion-row>
+                <ion-col>
+                    <ion-label style="line-height: 60px;padding-left: 10px;">Every *</ion-label>
+                </ion-col>
+                <ion-col>
+                    <ion-item>
+                        <ion-input formControlName="amount" type="number"
+                                   [(ngModel)]="mmmService.manageTransactionData.customRepeatCount"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col size="6">
+                    <ion-item>
+                        <ion-select class="select-full-width" formControlName="type" placeholder="Select One"
+                                    [(ngModel)]="mmmService.manageTransactionData.customRepeat">
+                            <ion-select-option value="never">Never repeat</ion-select-option>
+                            <ion-select-option value="daily">days</ion-select-option>
+                            <ion-select-option value="weekly">weeks</ion-select-option>
+                            <ion-select-option value="monthly">months</ion-select-option>
+                            <ion-select-option value="yearly">years</ion-select-option>
+                        </ion-select>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+        <!--</ion-item>-->
+
+        <ion-item>
+            <ion-label>Start Date *</ion-label>
+            <ion-datetime formControlName="startDate" displayFormat="MMMM-DD-YYYY"
+                          [(ngModel)]="mmmService.manageTransactionData.startDate"
+                          placeholder="Select Date"></ion-datetime>
+        </ion-item>
+        <ion-item>
+            <ion-label>End Date *</ion-label>
+            <ion-datetime formControlName="endDate" displayFormat="MMMM-DD-YYYY"
+                          [(ngModel)]="mmmService.manageTransactionData.endDate"
+                          placeholder="End Date"></ion-datetime>
+        </ion-item>
+
+    </form>
+
+    <!--<pre>{{mmmService.settledDate|json}}</pre>-->
+
+    <ion-list *ngIf="activeTab=='transaction-breakups'">
+
+        <ion-item class="transaction-breakup"
+                  *ngFor="let d of mmmService.recurringDates(mmmService.manageTransactionData.startDate, mmmService.manageTransactionData.endDate, 1, getIntervalType(), false)">
+            <div class="status-line" [style.backgroundColor]="isSettled(d)?'green':'red'"></div>
+            <ion-label class="ml-3">
+                <h2>{{mmmService.manageTransactionData.label}}</h2>
+                <h3>{{mmmService.manageTransactionData.amount}}</h3>
+                <ion-label color="primary">Due on {{d | date : 'MMM-dd-yyyy'}}</ion-label>
+                <ion-label color="success" *ngIf="isSettled(d)">Settled</ion-label>
+                <ion-label color="danger" *ngIf="!isSettled(d)">Not Settled</ion-label>
+            </ion-label>
+            <ion-button (click)="addSettledTransaction(d, false)"
+                        fill="clear"
+                        *ngIf="isSettled(d)" class="transaction-breakup-button"
+                        color="danger">Mark as <br><br> Not Settled
+            </ion-button>
+
+            <ion-button (click)="addSettledTransaction(d, true)"
+                        fill="clear"
+                        *ngIf="!isSettled(d)" class="transaction-breakup-button"
+                        color="success">Mark as <br><br> &nbsp; &nbsp; Settled &nbsp; &nbsp;
+            </ion-button>
+
+        </ion-item>
+
+    </ion-list>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button [disabled]="transactionForm.invalid || isDirty()" (click)="showSaveConfirmation();">
+            <ion-icon name="save"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
+    <ion-fab vertical="bottom" horizontal="start" slot="fixed" *ngIf="mmmService.isUpdate">
+        <ion-fab-button color="danger" (click)="showDeleteConfirmation();">
+            <ion-icon name="trash"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
+    <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+        <ion-fab-button color="dark" (click)="showCloseConfirmation();">
+            <ion-icon name="close"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
 </ion-content>
+<ion-footer>
+    <ion-toolbar color="primary">
+        <ion-segment [(ngModel)]="activeTab">
+            <ion-segment-button value="transaction-details">
+                <ion-label>Transaction Details</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="transaction-breakups">
+                <ion-label>Transaction Breakups</ion-label>
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+</ion-footer>

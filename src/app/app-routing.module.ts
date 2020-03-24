@@ -1,12 +1,17 @@
 import {NgModule} from '@angular/core';
 import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
+import {ManageTransactionPage} from './manage-transaction/manage-transaction.page';
+import {HomePage} from './home/home.page';
 
 const routes: Routes = [
-    {path: '', redirectTo: 'login', pathMatch: 'full'},
-    {path: 'home', loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)},
+    {path: '', redirectTo: 'manage-transaction', pathMatch: 'full'},
+    {
+        path: 'home',
+        component: HomePage
+    },
     {
         path: 'manage-transaction',
-        loadChildren: () => import('./manage-transaction/manage-transaction.module').then(m => m.ManageTransactionPageModule)
+        component: ManageTransactionPage
     },
     {
         path: 'login',

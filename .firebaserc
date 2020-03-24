@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "monthly-money-manager-85bf4": {
+      "hosting": {
+        "app": [
+          "monthly-money-manager-85bf4"
+        ]
+      }
+    }
+  }
+}
