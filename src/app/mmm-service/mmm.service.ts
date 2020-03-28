@@ -24,8 +24,6 @@ export class MmmService {
             )
         )
     );
-;
-
     transactionsKeyToUpdate$ = new Subject<string>();
     settledTransactionsToUpdate$ = this.transactionsKeyToUpdate$.pipe(
         switchMap(transactionsKey =>
