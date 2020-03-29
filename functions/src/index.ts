@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import {Transactions} from './transactions/transactions';
 import {SettledTransactions} from './settled-transactions/settled-transactions';
+import {RecurringTransactions} from './recurring-transactions/recurring-transactions';
 
 admin.initializeApp();
 
@@ -22,3 +23,10 @@ export const addNewSettledTransaction = functions.https.onRequest(settledTransac
 export const getSettledTransactions = functions.https.onRequest(settledTransactions.get.bind(settledTransactions));
 export const deleteSettledTransaction = functions.https.onRequest(settledTransactions.remove.bind(settledTransactions));
 export const updateSettledTransaction = functions.https.onRequest(settledTransactions.update.bind(settledTransactions));
+
+
+/**
+ * RecurringTransactions
+ * */
+const recurringTransactions: RecurringTransactions = new RecurringTransactions();
+export const getSettledRecurringTransactions = functions.https.onRequest(recurringTransactions.get.bind(recurringTransactions));

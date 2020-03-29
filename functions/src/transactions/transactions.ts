@@ -1,10 +1,10 @@
 import * as admin from 'firebase-admin';
 import {Request} from 'firebase-functions/lib/providers/https';
+import {RecurringTransactions} from '../recurring-transactions/recurring-transactions';
 
 export interface TransactionsModel {
     amount: number;
-    customRepeat: string;
-    customRepeatCount: number;
+    interval: number;
     endDate: string;
     label: string;
     repeat: string;
@@ -17,6 +17,7 @@ export interface TransactionsModel {
 export class Transactions {
 
     private firestore = admin.firestore();
+    private recurringTransactions: RecurringTransactions = new RecurringTransactions();
 
     add(request: Request, response: any) {
         const model: TransactionsModel = request.body;
@@ -58,32 +59,27 @@ export class Transactions {
     }
 
     get(request: Request, response: any) {
-        // userUid
         if (request.query.userUid && request.query.userUid.length > 0) {
-            this.firestore.collection('transactions').where('userUid', '==', request.query.userUid).get().then(function(snapshot) {
-                const responseObject = snapshot.docs.map(doc => ({...doc.data(), id: doc.id}));
-                console.log(responseObject);
-                response.send(responseObject);
-            }).catch(function(error) {
+            this.firestore.collection('transactions').where('userUid', '==', request.query.userUid).get().then(
+                (snapshot) => {
+                    const responseObject = snapshot.docs.map(doc => {
+                        const transaction = {...doc.data(), id: doc.id};
+                        const breakups = this.recurringTransactions.getTransactionBreakups(transaction);
+                        return ({...doc.data(), id: doc.id, breakups});
+                    });
+
+                    console.log(responseObject);
+                    response.send(responseObject);
+                }).catch(function(error) {
                 const responseObject = {error, color: 'danger', message: 'error while getting transactions.', duration: 2000};
                 console.error(responseObject);
                 response.status(500).send(responseObject);
             });
-        }else{
+        } else {
             const responseObject = {color: 'warning', message: 'please provide valid userUid.', duration: 2000};
             console.error(responseObject);
             response.status(500).send(responseObject);
         }
-
-        /*this.firestore.collection('transactions').get().then(function(snapshot) {
-            const responseObject = snapshot.docs.map(doc => ({...doc.data(), id: doc.id}));
-            console.log(responseObject);
-            response.send(responseObject);
-        }).catch(function(error) {
-            const responseObject = {error, color: 'danger', message: 'error while getting transactions.', duration: 2000};
-            console.error(responseObject);
-            response.send(responseObject);
-        });*/
     }
 
     update(request: Request, response: any) {
@@ -112,8 +108,7 @@ export class Transactions {
     isValidate(model: TransactionsModel) {
         return (
             (model.amount && model.amount > 0) &&
-            (model.customRepeat && model.customRepeat.length > 0) &&
-            (model.customRepeatCount && model.customRepeatCount >= 0) &&
+            (model.interval && model.interval > 0) &&
             (model.endDate && model.endDate.length > 0) &&
             (model.label && model.label.length > 0) &&
             (model.repeat && model.repeat.length > 0) &&
