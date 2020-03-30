@@ -1,75 +1,93 @@
 <!--<ng-container *ngIf="authentication.user | async as user; else elseBlock">-->
 
-    <ion-header *ngIf="mmmService.years$ | async as years">
-        <ion-toolbar color="primary">
-            <ion-buttons slot="start">
-                <ion-menu-button auto-hide="false"></ion-menu-button>
-            </ion-buttons>
-            <ion-buttons slot="primary">
-                <ion-button (click)="presentLogoutConfirm()">
-                    <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
-                </ion-button>
-            </ion-buttons>
+<ion-header *ngIf="mmmService.years$ | async as years">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-menu-button auto-hide="false"></ion-menu-button>
+        </ion-buttons>
+        <ion-buttons slot="primary">
+            <ion-button (click)="presentLogoutConfirm()">
+                <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
 
-            <ion-title class="ion-text-center ion-padding-vertical">Monthly Money Manager</ion-title>
-            <ion-title (click)="monthsDropDown.open($event)" class="ion-text-center ion-padding-bottom">
-                {{mmmService.getFullMonth(mmmService.mmmState.selectedMonth)}} - {{mmmService.mmmState.selectedYear}} ▾
-            </ion-title>
+        <ion-title class="ion-text-center ion-padding-vertical">Monthly Money Manager</ion-title>
+        <ion-title *ngIf="selectedSate$ | async as selectedSate" (click)="monthsDropDown.open($event)"
+                   class="ion-text-center ion-padding-bottom">
+            {{mmmService.getFullMonth(selectedSate.month)}} - {{selectedSate.year}} ▾
+        </ion-title>
 
-            <ion-item style="display: none;">
-                <ion-label>Select Year</ion-label>
-                <ion-select #monthsDropDown [ngModel]="mmmService.mmmState.selectedYear"
-                            (ionChange)="mmmService.setSelectedYear($event.detail.value, mmmService.mmmState)" placeholder="Select Year">
-                    <ion-select-option *ngFor="let year of years" [value]="year.id">{{year.label}}</ion-select-option>
-                </ion-select>
-            </ion-item>
+        <ion-item style="display: none;">
+            <ion-label>Select Year</ion-label>
+            <ion-select #monthsDropDown [ngModel]="mmmService.mmmState.selectedYear"
+                        (ionChange)="transactionsService.setSelectedYear($event.detail.value)"
+                        placeholder="Select Year">
+                <ion-select-option *ngFor="let year of years" [value]="year.id">{{year.label}}</ion-select-option>
+            </ion-select>
+        </ion-item>
 
-        </ion-toolbar>
-    </ion-header>
-    <ion-content [fullscreen]="true">
-
-        <ion-list *ngIf="mmmService.filteredTransactions$ | async as filteredTransactions">
-            <ion-item *ngFor="let transaction of filteredTransactions" (click)="mmmService.updateTransaction(transaction)">
-                <!--<ion-avatar slot="start"></ion-avatar>-->
+    </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+    <ng-container *ngIf="transactionsByMonth$ | async as transactionsByMonth else loading">
+        <!--<h4>Transactions</h4>
+        <pre>{{transactionsByMonth | json}}</pre>-->
+        <ion-list>
+            <ion-item *ngFor="let transaction of transactionsByMonth">
                 <ion-label>
                     <h2>{{transaction.label}}</h2>
                     <h3>{{transaction.amount}}</h3>
-                    <p>Due on {{transaction.startDate | date : 'MMM-dd'}}</p>
+                    <p>Due on {{transaction.dueOn | date : 'MMM-dd'}}</p>
                 </ion-label>
             </ion-item>
         </ion-list>
 
-        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-            <ion-fab-button (click)="mmmService.addNewTransaction()"  routerDirection="root">
-                <ion-icon name="add"></ion-icon>
-            </ion-fab-button>
-        </ion-fab>
+    </ng-container>
 
-    </ion-content>
-    <ion-footer>
-        <ion-toolbar color="primary">
-            <ion-segment [ngModel]="mmmService.mmmState.selectedMonth"
-                         (ionChange)="mmmService.setSelectedMonth($event.detail.value, mmmService.mmmState)" scrollable
-                         *ngIf="mmmService.months$ | async as months">
-                <ion-segment-button [value]="month.id" *ngFor="let month of months">
-                    {{month.label}}
-                </ion-segment-button>
-            </ion-segment>
-            <ion-segment [ngModel]="mmmService.mmmState.selectedType" (ionChange)="mmmService.setSelectedType($event.detail.value, mmmService.mmmState)"
-                         *ngIf="mmmService.types$ | async as types">
-                <ion-segment-button [value]="type.id" *ngFor="let type of types">
-                    {{type.label}}
-                </ion-segment-button>
-            </ion-segment>
-        </ion-toolbar>
-    </ion-footer>
+
+    <!--<ion-list *ngIf="mmmService.filteredTransactions$ | async as filteredTransactions">
+        <ion-item *ngFor="let transaction of filteredTransactions" (click)="mmmService.updateTransaction(transaction)">
+            &lt;!&ndash;<ion-avatar slot="start"></ion-avatar>&ndash;&gt;
+            <ion-label>
+                <h2>{{transaction.label}}</h2>
+                <h3>{{transaction.amount}}</h3>
+                <p>Due on {{transaction.startDate | date : 'MMM-dd'}}</p>
+            </ion-label>
+        </ion-item>
+    </ion-list>-->
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="mmmService.addNewTransaction()"  routerDirection="root">
+            <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
+</ion-content>
+<ion-footer>
+    <ion-toolbar color="primary" *ngIf="selectedSate$ | async as selectedSate">
+        <ion-segment [ngModel]="selectedSate.month"
+                     (ionChange)="transactionsService.setSelectedMonth($event.detail.value)" scrollable
+                     *ngIf="mmmService.months$ | async as months">
+            <ion-segment-button [value]="month.id" *ngFor="let month of months">
+                {{month.label}}
+            </ion-segment-button>
+        </ion-segment>
+        <ion-segment [ngModel]="selectedSate.type"
+                     (ionChange)="transactionsService.setSelectedType($event.detail.value)"
+                     *ngIf="mmmService.types$ | async as types">
+            <ion-segment-button [value]="type.id" *ngFor="let type of types">
+                {{type.label}}
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+</ion-footer>
 
 
 <!--</ng-container>-->
 
 
-<ng-template #elseBlock>
-    <ion-content [fullscreen]="true">
-        <ion-button color="danger" *ngIf="!(mmmService.authentication.user | async)" (click)="mmmService.login()">Login</ion-button>
-    </ion-content>
+<ng-template #loading>
+    <div class="busy-indicator-container">
+        <ion-spinner name="lines"></ion-spinner>
+    </div>
 </ng-template>

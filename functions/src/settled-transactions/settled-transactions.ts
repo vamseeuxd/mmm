@@ -14,12 +14,12 @@ export class SettledTransactions {
     private tableName = 'settledTransactions';
 
     add(request: Request, response: any) {
+        response.set('Access-Control-Allow-Origin', '*');
         const model: TransactionsModel = request.body;
         if (this.isValidate(model)) {
             const documentRef = this.firestore.collection(this.tableName).doc();
             documentRef.create(request.body).then(function() {
                 const responseObject = {color: 'success', message: 'settledTransactions have been saved.', duration: 2000};
-                console.log(responseObject);
                 response.send(responseObject);
             }).catch(function(error) {
                 const responseObject = {error, color: 'danger', message: 'error while saving settledTransactions.', duration: 2000};
@@ -34,11 +34,11 @@ export class SettledTransactions {
     }
 
     remove(request: Request, response: any) {
+        response.set('Access-Control-Allow-Origin', '*');
         const model: TransactionsModel = request.body;
         if (model.id && model.id.length > 0) {
             this.firestore.doc(this.tableName + '/' + request.body.id).delete().then(function() {
                 const responseObject = {color: 'success', message: 'settledTransactions have been deleted.', duration: 2000};
-                console.log(responseObject);
                 response.send(responseObject);
             }).catch(function(error) {
                 const responseObject = {error, color: 'danger', message: 'error while deleting settledTransactions.', duration: 2000};
@@ -53,10 +53,10 @@ export class SettledTransactions {
     }
 
     get(request: Request, response: any) {
+        response.set('Access-Control-Allow-Origin', '*');
         if (request.query.transactionsKey && request.query.transactionsKey.length > 0) {
             this.firestore.collection(this.tableName).where('transactionsKey', '==', request.query.transactionsKey).get().then(function(snapshot) {
                 const responseObject = snapshot.docs.map(doc => ({...doc.data(), id: doc.id}));
-                console.log(responseObject);
                 response.send(responseObject);
             }).catch(function(error) {
                 const responseObject = {error, color: 'danger', message: 'error while getting transactions.', duration: 2000};
@@ -71,6 +71,7 @@ export class SettledTransactions {
     }
 
     update(request: Request, response: any) {
+        response.set('Access-Control-Allow-Origin', '*');
         const model: TransactionsModel = JSON.parse(JSON.stringify(request.body));
         if (
             (model.id && model.id.length > 0) &&
@@ -79,7 +80,6 @@ export class SettledTransactions {
             delete model.id;
             this.firestore.doc(this.tableName + '/' + request.body.id).update(model).then(function() {
                 const responseObject = {color: 'success', message: 'settledTransactions have been updated.', duration: 2000};
-                console.log(responseObject);
                 response.send(responseObject);
             }).catch(function(error) {
                 const responseObject = {error, color: 'danger', message: 'error while updating settledTransactions.', duration: 2000};

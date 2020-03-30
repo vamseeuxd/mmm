@@ -9,18 +9,22 @@ import {Router} from '@angular/router';
 import {FormBuilder} from '@angular/forms';
 import {AngularFireDatabase, AngularFireList} from '@angular/fire/database';
 import {MmmService} from '../mmm-service/mmm.service';
+import {TransactionsService} from '../api/transactions.service';
 
 @Component({
     selector: 'app-home',
     templateUrl: 'home.page.html',
     styleUrls: ['home.page.scss'],
 })
-export class HomePage  {
+export class HomePage {
 
+    transactionsByMonth$ = this.transactionsService.transactionsByMonth$;
+    selectedSate$ = this.transactionsService.selectedSate$;
 
     constructor(
         public mmmService: MmmService,
         public alertController: AlertController,
+        public transactionsService: TransactionsService
     ) {
 
     }

@@ -10,15 +10,19 @@ export class RecurringTransactions {
             this.getIntervalType(transaction.repeat),
             false
         );
-        return recurringDates.map(date => {
+        const returnData = recurringDates.map(date => {
             const _date = new Date(date);
             return {
                 label: transaction.label,
                 amount: transaction.amount,
+                id: transaction.id,
+                type: transaction.type,
                 dueOn: `${_date.getMonth() + 1}-${_date.getDate()}-${_date.getFullYear()}`,
                 isSettled: false
             };
         });
+        // console.log(JSON.stringify(returnData, null, 2));
+        return returnData;
     }
 
     get(request: Request, response: any) {

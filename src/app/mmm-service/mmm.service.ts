@@ -61,27 +61,27 @@ export class MmmService {
     mmmState$ = this.mmmStateSubject.asObservable();
 
     years = [
-        {id: '2020', label: '2020'},
-        {id: '2021', label: '2021'},
-        {id: '2022', label: '2022'},
-        {id: '2023', label: '2023'},
+        {id: 2020, label: '2020'},
+        {id: 2021, label: '2021'},
+        {id: 2022, label: '2022'},
+        {id: 2023, label: '2023'},
     ];
     yearsSubject: BehaviorSubject<any> = new BehaviorSubject<any>(this.years);
     years$ = this.yearsSubject.asObservable();
 
     months$ = of([
-        {id: '01', label: 'Jan'},
-        {id: '02', label: 'Feb'},
-        {id: '03', label: 'Mar'},
-        {id: '04', label: 'Apr'},
-        {id: '05', label: 'May'},
-        {id: '06', label: 'Jun'},
-        {id: '07', label: 'Jul'},
-        {id: '08', label: 'Aug'},
-        {id: '09', label: 'Sep'},
-        {id: '10', label: 'Oct'},
-        {id: '11', label: 'Nov'},
-        {id: '12', label: 'Dec'},
+        {id: 1, label: 'Jan'},
+        {id: 2, label: 'Feb'},
+        {id: 3, label: 'Mar'},
+        {id: 4, label: 'Apr'},
+        {id: 5, label: 'May'},
+        {id: 6, label: 'Jun'},
+        {id: 7, label: 'Jul'},
+        {id: 8, label: 'Aug'},
+        {id: 9, label: 'Sep'},
+        {id: 10, label: 'Oct'},
+        {id: 11, label: 'Nov'},
+        {id: 12, label: 'Dec'},
     ]);
 
     types$ = of([
@@ -102,15 +102,15 @@ export class MmmService {
 
     getFullMonth(month) {
         const months = {
-            '01': 'January',
-            '02': 'February',
-            '03': 'March',
-            '04': 'April',
-            '05': 'May',
-            '06': 'June',
-            '07': 'July',
-            '08': 'August',
-            '09': 'September',
+            '1': 'January',
+            '2': 'February',
+            '3': 'March',
+            '4': 'April',
+            '5': 'May',
+            '6': 'June',
+            '7': 'July',
+            '8': 'August',
+            '9': 'September',
             '10': 'October',
             '11': 'November',
             '12': 'December',
@@ -156,6 +156,7 @@ export class MmmService {
     }
 
     setSelectedMonth(setSelectedMonth, mmmState) {
+        debugger;
         mmmState.selectedMonth = setSelectedMonth;
         this.mmmStateSubject.next(mmmState);
     }

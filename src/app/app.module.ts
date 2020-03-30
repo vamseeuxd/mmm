@@ -20,6 +20,7 @@ import {ManageTransactionPage} from './manage-transaction/manage-transaction.pag
 import {HomePage} from './home/home.page';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
     declarations: [AppComponent, ManageTransactionPage, HomePage],
@@ -39,7 +40,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
         FormsModule,
         IonicModule,
         ReactiveFormsModule,
-        FormsModule
+        FormsModule,
+        HttpClientModule
     ],
     providers: [
         StatusBar,

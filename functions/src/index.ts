@@ -12,6 +12,8 @@ admin.initializeApp();
 const transactions: Transactions = new Transactions();
 export const addNewTransaction = functions.https.onRequest(transactions.add.bind(transactions));
 export const getTransactions = functions.https.onRequest(transactions.get.bind(transactions));
+export const getTransactionsByMonth = functions.https.onRequest(transactions.getByMonth.bind(transactions));
+export const getTransactionBreakups = functions.https.onRequest(transactions.getTransactionBreakups.bind(transactions));
 export const deleteTransaction = functions.https.onRequest(transactions.remove.bind(transactions));
 export const updateTransaction = functions.https.onRequest(transactions.update.bind(transactions));
 

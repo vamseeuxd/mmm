@@ -5,12 +5,13 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "ionic serve",
-    "start1": "ionic serve --address=192.168.0.4 --devapp",
-    "build": "ionic build --prod",
+    "start": "ionic serve -- --proxy-config proxy.conf.json",
+    "start1": "ionic serve --address=192.168.0.4 --devapp --proxy-config proxy.conf.json",
+    "build": "ionic build --prod --proxy-config proxy.conf.json",
     "test": "ng test",
     "lint": "ng lint",
     "host": "firebase deploy",
+    "service": "ionic generate service api/Transactions",
     "e2e": "ng e2e"
   },
   "private": true,
